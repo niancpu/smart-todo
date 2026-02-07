@@ -18,7 +18,7 @@ export class User {
   email: string;
 
   @Column({ length: 255, nullable: true })
-  password: string | null;
+  password: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
