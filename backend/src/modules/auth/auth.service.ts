@@ -74,7 +74,6 @@ export class AuthService {
     const user = this.userRepository.create({
       username: dto.username,
       email: dto.email,
-      password: null,
     });
     await this.userRepository.save(user);
 
