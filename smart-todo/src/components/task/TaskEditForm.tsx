@@ -38,8 +38,8 @@ export default function TaskEditForm({ task, onSave, onCancel }: Props) {
     });
   };
 
-  const inputClass = 'w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500';
-  const labelClass = 'block text-xs font-medium text-gray-500 mb-1';
+  const inputClass = 'w-full rounded-xl glass-input px-3 py-2 text-sm font-body';
+  const labelClass = 'block text-xs font-medium text-slate-400 mb-1';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,10 +89,10 @@ export default function TaskEditForm({ task, onSave, onCancel }: Props) {
       </div>
 
       <div className="flex gap-2 justify-end pt-2">
-        <button type="button" onClick={onCancel} className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+        <button type="button" onClick={onCancel} className="px-4 py-2 text-sm text-slate-500 border border-white/30 rounded-xl hover:bg-white/40 transition-all">
           取消
         </button>
-        <button type="submit" disabled={!title.trim()} className="px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors">
+        <button type="submit" disabled={!title.trim()} className="px-4 py-2 text-sm glass-btn rounded-xl">
           保存
         </button>
       </div>

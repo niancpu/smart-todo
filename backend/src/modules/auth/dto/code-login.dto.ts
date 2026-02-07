@@ -1,11 +1,7 @@
 import { IsEmail, IsString, Length } from 'class-validator';
 import { IsAllowedEmailDomain } from '../validators/email-domain.validator';
 
-export class RegisterDto {
-  @IsString()
-  @Length(2, 20)
-  username: string;
-
+export class CodeLoginDto {
   @IsEmail()
   @IsAllowedEmailDomain()
   email: string;

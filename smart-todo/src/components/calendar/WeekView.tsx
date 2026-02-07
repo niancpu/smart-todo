@@ -4,10 +4,10 @@ import { formatRelativeDate, isOverdue } from '@/utils/date';
 import { useTaskStore } from '@/features/task/hooks';
 
 const priorityColors: Record<string, string> = {
-  urgent: 'bg-red-500',
-  high: 'bg-orange-500',
-  medium: 'bg-blue-500',
-  low: 'bg-gray-400',
+  urgent: 'bg-red-400',
+  high: 'bg-orange-400',
+  medium: 'bg-blue-400',
+  low: 'bg-slate-300',
 };
 
 interface Props {
@@ -29,22 +29,22 @@ export default function WeekView({ days, tasks }: Props) {
 
         return (
           <div key={i}>
-            <div className={`flex items-center gap-2 mb-1.5 px-1 ${today ? 'text-blue-600' : 'text-gray-600'}`}>
+            <div className={`flex items-center gap-2 mb-1.5 px-1 ${today ? 'text-accent' : 'text-slate-500'}`}>
               <span className={`inline-flex items-center justify-center w-7 h-7 text-sm rounded-full font-medium ${
-                today ? 'bg-blue-600 text-white' : ''
+                today ? 'bg-accent text-white' : ''
               }`}>
                 {date.getDate()}
               </span>
               <span className="text-xs font-medium">
                 {WEEKDAY_LABELS[date.getDay()]}
               </span>
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-slate-400">
                 {date.getMonth() + 1}/{date.getDate()}
               </span>
             </div>
 
             {dayTasks.length === 0 ? (
-              <div className="text-xs text-gray-300 pl-10 py-2">无任务</div>
+              <div className="text-xs text-slate-300 pl-10 py-2">无任务</div>
             ) : (
               <div className="space-y-1.5 pl-2">
                 {dayTasks.map((task) => {
@@ -54,14 +54,14 @@ export default function WeekView({ days, tasks }: Props) {
                     <div
                       key={task.id}
                       onClick={() => selectTask(task.id ?? null)}
-                      className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-colors ${
+                      className={`flex items-center gap-2 p-2 rounded-xl cursor-pointer transition-all duration-200 ${
                         isDone
-                          ? 'bg-gray-50 border-gray-100'
-                          : 'bg-white border-gray-200 hover:border-gray-300'
+                          ? 'glass-light opacity-60'
+                          : 'glass hover:shadow-glass-hover hover:translate-y-[-1px]'
                       }`}
                     >
                       <span className={`w-2 h-2 rounded-full flex-shrink-0 ${priorityColors[task.priority]}`} />
-                      <span className={`text-sm truncate flex-1 ${isDone ? 'line-through text-gray-400' : 'text-gray-800'}`}>
+                      <span className={`text-sm truncate flex-1 ${isDone ? 'line-through text-slate-400' : 'text-slate-700'}`}>
                         {task.title}
                       </span>
                       {overdue && (

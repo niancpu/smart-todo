@@ -1,10 +1,10 @@
 import type { TaskDraft } from '@/types';
 
 const priorityConfig: Record<string, { label: string; color: string }> = {
-  urgent: { label: '紧急', color: 'text-red-600 bg-red-50' },
-  high: { label: '高', color: 'text-orange-600 bg-orange-50' },
-  medium: { label: '中', color: 'text-yellow-600 bg-yellow-50' },
-  low: { label: '低', color: 'text-green-600 bg-green-50' },
+  urgent: { label: '紧急', color: 'text-red-600 bg-red-400/10' },
+  high: { label: '高', color: 'text-orange-600 bg-orange-400/10' },
+  medium: { label: '中', color: 'text-blue-600 bg-blue-400/10' },
+  low: { label: '低', color: 'text-emerald-600 bg-emerald-400/10' },
 };
 
 const categoryLabels: Record<string, string> = {
@@ -45,23 +45,43 @@ export default function TaskCard({ draft, created }: Props) {
   const prio = priorityConfig[draft.priority] ?? priorityConfig.medium;
 
   return (
-    <div className={`mt-2 rounded-lg border p-3 text-sm ${created ? 'border-green-400 bg-green-50/50' : 'border-gray-200 bg-gray-50/50'}`}>
-      <div className="flex items-center gap-1.5 font-medium text-gray-800">
+    <div className={`mt-2 rounded-xl p-3 text-sm ${created ? 'bg-emerald-400/10 border border-emerald-300/30' : 'bg-white/30 border border-white/20'}`}>
+      <div className="flex items-center gap-1.5 font-medium text-slate-700">
         {created && (
-          <svg className="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         )}
         {draft.title}
       </div>
-      <div className="flex flex-wrap gap-2 mt-1.5 text-xs text-gray-500">
+      <div className="flex flex-wrap gap-2 mt-1.5 text-xs text-slate-400">
         {draft.dueDate && (
-          <span>📅 {formatDate(draft.dueDate)}</span>
+          <span className="flex items-center gap-1">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            {formatDate(draft.dueDate)}
+          </span>
         )}
-        <span className={`px-1.5 py-0.5 rounded ${prio.color} text-xs`}>{prio.label}</span>
-        <span>🏷️ {categoryLabels[draft.category] ?? draft.category}</span>
+        <span className={`px-1.5 py-0.5 rounded-md ${prio.color} text-xs`}>{prio.label}</span>
+        <span className="flex items-center gap-1">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+            <line x1="7" y1="7" x2="7.01" y2="7" />
+          </svg>
+          {categoryLabels[draft.category] ?? draft.category}
+        </span>
         {draft.estimatedMinutes && (
-          <span>⏱️ {draft.estimatedMinutes}分钟</span>
+          <span className="flex items-center gap-1">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            {draft.estimatedMinutes}分钟
+          </span>
         )}
       </div>
     </div>

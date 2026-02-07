@@ -1,6 +1,6 @@
 import { refreshApi } from '@/features/auth/api';
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'http://115.190.1.69:3000';
 
 let isRefreshing = false;
 let refreshPromise: Promise<string> | null = null;

@@ -14,15 +14,15 @@ export default function TaskList() {
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-1 bg-gray-100 p-1 rounded-lg w-fit">
+      <div className="flex gap-1 glass-light p-1 rounded-xl w-fit">
         {statusTabs.map((tab) => (
           <button
             key={tab.value}
             onClick={() => setFilter({ status: tab.value })}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-all duration-200 ${
               (filter.status ?? 'all') === tab.value
-                ? 'bg-white text-gray-800 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-white/80 text-slate-800 shadow-sm'
+                : 'text-slate-500 hover:text-slate-700 hover:bg-white/30'
             }`}
           >
             {tab.label}
@@ -30,10 +30,13 @@ export default function TaskList() {
         ))}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 stagger-children">
         {tasks.length === 0 ? (
-          <div className="text-center py-12 text-gray-400 text-sm">
-            还没有任务，试试用自然语言添加一个吧
+          <div className="text-center py-16 animate-fade-in">
+            <svg className="w-12 h-12 mx-auto text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <p className="text-slate-400 text-sm">还没有任务，试试用自然语言添加一个吧</p>
           </div>
         ) : (
           tasks.map((task) => <TaskCard key={task.id} task={task} />)

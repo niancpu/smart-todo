@@ -1,11 +1,8 @@
-import { IsEmail, MinLength } from 'class-validator';
+import { IsEmail } from 'class-validator';
 import { IsAllowedEmailDomain } from '../validators/email-domain.validator';
 
-export class LoginDto {
+export class SendCodeDto {
   @IsEmail()
   @IsAllowedEmailDomain()
   email: string;
-
-  @MinLength(8)
-  password: string;
 }

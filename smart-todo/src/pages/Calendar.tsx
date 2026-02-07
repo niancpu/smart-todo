@@ -87,21 +87,21 @@ export default function Calendar() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-800">日历</h2>
-        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
+      <div className="flex items-center justify-between animate-fade-in">
+        <h2 className="text-xl font-display font-semibold text-slate-800">日历</h2>
+        <div className="flex items-center gap-1 glass-light p-0.5 rounded-xl">
           <button
             onClick={() => setViewMode('month')}
-            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-              viewMode === 'month' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            className={`px-3 py-1 text-xs font-medium rounded-lg transition-all duration-200 ${
+              viewMode === 'month' ? 'bg-white/80 text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
             }`}
           >
             月
           </button>
           <button
             onClick={() => setViewMode('week')}
-            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-              viewMode === 'week' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            className={`px-3 py-1 text-xs font-medium rounded-lg transition-all duration-200 ${
+              viewMode === 'week' ? 'bg-white/80 text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
             }`}
           >
             周
@@ -110,27 +110,27 @@ export default function Calendar() {
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between bg-white rounded-lg border border-gray-200 px-4 py-2.5">
+      <div className="flex items-center justify-between glass rounded-xl px-4 py-2.5">
         <button
           onClick={goPrev}
-          className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-1 text-slate-400 hover:text-slate-600 hover:bg-white/40 rounded-lg transition-all"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-gray-800">{headerLabel}</span>
+          <span className="text-sm font-display font-semibold text-slate-800">{headerLabel}</span>
           <button
             onClick={goToday}
-            className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+            className="text-xs text-accent hover:text-accent-dark font-medium transition-colors"
           >
             今天
           </button>
         </div>
         <button
           onClick={goNext}
-          className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-1 text-slate-400 hover:text-slate-600 hover:bg-white/40 rounded-lg transition-all"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -139,7 +139,7 @@ export default function Calendar() {
       </div>
 
       {/* Calendar body */}
-      <div className="bg-white rounded-lg border border-gray-200 p-3">
+      <div className="glass rounded-xl p-3">
         {viewMode === 'month' ? (
           <MonthView
             days={monthDays}

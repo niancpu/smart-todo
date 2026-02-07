@@ -51,14 +51,22 @@ export default function TaskInput() {
           onKeyDown={handleKeyDown}
           placeholder="输入任务，例如：明天下午3点开会"
           rows={1}
-          className="flex-1 resize-none rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder:text-gray-400"
+          className="flex-1 resize-none rounded-xl glass-input px-4 py-2.5 text-sm placeholder:text-slate-400 font-body"
         />
         <button
           onClick={handleSubmit}
           disabled={!input.trim() || isPending}
-          className="px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+          className="px-5 py-2.5 glass-btn text-sm font-medium rounded-xl whitespace-nowrap"
         >
-          {isPending ? '解析中...' : '添加'}
+          {isPending ? (
+            <span className="flex items-center gap-2">
+              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" className="opacity-30" />
+                <path d="M12 2a10 10 0 019.95 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+              </svg>
+              解析中
+            </span>
+          ) : '添加'}
         </button>
       </div>
       {data && (

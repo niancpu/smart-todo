@@ -4,10 +4,10 @@ import { useTaskStore } from '@/features/task/hooks';
 import { WEEKDAY_LABELS } from './calendarUtils';
 
 const priorityColors: Record<string, string> = {
-  urgent: 'bg-red-500',
-  high: 'bg-orange-500',
-  medium: 'bg-blue-500',
-  low: 'bg-gray-400',
+  urgent: 'bg-red-400',
+  high: 'bg-orange-400',
+  medium: 'bg-blue-400',
+  low: 'bg-slate-300',
 };
 
 const categoryLabels: Record<string, string> = {
@@ -23,14 +23,14 @@ export default function DayTaskList({ date, tasks }: Props) {
   const selectTask = useTaskStore((s) => s.selectTask);
 
   return (
-    <div className="mt-4">
-      <h3 className="text-sm font-medium text-gray-700 mb-2">
+    <div className="mt-4 animate-fade-in-up">
+      <h3 className="text-sm font-display font-medium text-slate-700 mb-2">
         {date.getMonth() + 1}月{date.getDate()}日 周{WEEKDAY_LABELS[date.getDay()]}
-        <span className="text-gray-400 ml-2">({tasks.length} 个任务)</span>
+        <span className="text-slate-400 ml-2">({tasks.length} 个任务)</span>
       </h3>
 
       {tasks.length === 0 ? (
-        <div className="text-sm text-gray-400 py-4 text-center bg-white rounded-lg border border-gray-200">
+        <div className="text-sm text-slate-400 py-4 text-center glass rounded-xl">
           当天没有任务
         </div>
       ) : (
@@ -42,26 +42,26 @@ export default function DayTaskList({ date, tasks }: Props) {
               <div
                 key={task.id}
                 onClick={() => selectTask(task.id ?? null)}
-                className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 ${
                   isDone
-                    ? 'bg-gray-50 border-gray-100 hover:border-gray-200'
-                    : 'bg-white border-gray-200 hover:border-gray-300'
+                    ? 'glass-light opacity-70 hover:opacity-90'
+                    : 'glass hover:shadow-glass-hover hover:translate-y-[-1px]'
                 }`}
               >
                 <span className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${priorityColors[task.priority]}`} />
                 <div className="flex-1 min-w-0">
-                  <span className={`text-sm ${isDone ? 'line-through text-gray-400' : 'text-gray-800'}`}>
+                  <span className={`text-sm ${isDone ? 'line-through text-slate-400' : 'text-slate-700 font-medium'}`}>
                     {task.title}
                   </span>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">
+                    <span className="text-xs bg-white/40 text-slate-500 px-1.5 py-0.5 rounded-md">
                       {categoryLabels[task.category] ?? task.category}
                     </span>
                     {overdue && (
                       <span className="text-xs text-red-500 font-medium">{formatRelativeDate(task.dueDate)}</span>
                     )}
                     {task.estimatedMinutes && (
-                      <span className="text-xs text-gray-400">{task.estimatedMinutes}分钟</span>
+                      <span className="text-xs text-slate-400">{task.estimatedMinutes}分钟</span>
                     )}
                   </div>
                 </div>

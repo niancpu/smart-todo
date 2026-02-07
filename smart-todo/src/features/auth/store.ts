@@ -1,13 +1,14 @@
 import { create } from 'zustand';
 import type { AuthUser } from '@/types/auth';
-import { loginApi, registerApi, logoutApi } from './api';
+import { loginApi, registerApi, logoutApi, loginWithCodeApi } from './api';
 
 interface AuthState {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  loginWithCode: (email: string, code: string) => Promise<void>;
+  register: (username: string, email: string, code: string) => Promise<void>;
   logout: () => Promise<void>;
   initialize: () => void;
 }
@@ -25,8 +26,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user: data.user, isAuthenticated: true });
   },
 
-  register: async (email, password) => {
-    const data = await registerApi(email, password);
+  loginWithCode: async (email, code) => {
+    const data = await loginWithCodeApi(email, code);
+    localStorage.setItem('accessToken', data.accessToken);
+    localStorage.setItem('refreshToken', data.refreshToken);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    set({ user: data.user, isAuthenticated: true });
+  },
+
+  register: async (username, email, code) => {
+    const data = await registerApi(username, email, code);
     localStorage.setItem('accessToken', data.accessToken);
     localStorage.setItem('refreshToken', data.refreshToken);
     localStorage.setItem('user', JSON.stringify(data.user));

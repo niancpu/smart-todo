@@ -2,10 +2,10 @@ import type { Task, Priority } from '@/types';
 import { isSameDay, isToday, WEEKDAY_LABELS } from './calendarUtils';
 
 const priorityDotColors: Record<Priority, string> = {
-  urgent: 'bg-red-500',
-  high: 'bg-orange-500',
-  medium: 'bg-blue-500',
-  low: 'bg-gray-400',
+  urgent: 'bg-red-400',
+  high: 'bg-orange-400',
+  medium: 'bg-blue-400',
+  low: 'bg-slate-300',
 };
 
 interface Props {
@@ -25,14 +25,14 @@ export default function MonthView({ days, currentMonth, tasks, selectedDate, onS
       {/* Weekday headers */}
       <div className="grid grid-cols-7 mb-1">
         {WEEKDAY_LABELS.map((label) => (
-          <div key={label} className="text-center text-xs font-medium text-gray-500 py-2">
+          <div key={label} className="text-center text-xs font-medium text-slate-400 py-2">
             {label}
           </div>
         ))}
       </div>
 
       {/* Day cells */}
-      <div className="grid grid-cols-7 border-t border-l border-gray-200">
+      <div className="grid grid-cols-7 gap-px bg-white/10 rounded-lg overflow-hidden">
         {days.map((date, i) => {
           const inMonth = date.getMonth() === currentMonth;
           const today = isToday(date);
@@ -43,21 +43,21 @@ export default function MonthView({ days, currentMonth, tasks, selectedDate, onS
             <div
               key={i}
               onClick={() => onSelectDate(date)}
-              className={`min-h-[72px] md:min-h-[80px] p-1.5 border-r border-b border-gray-200 cursor-pointer transition-colors ${
+              className={`min-h-[72px] md:min-h-[80px] p-1.5 cursor-pointer transition-all duration-150 ${
                 selected
-                  ? 'bg-blue-50'
+                  ? 'bg-accent/8'
                   : today
-                    ? 'bg-amber-50/50'
-                    : 'hover:bg-gray-50'
+                    ? 'bg-amber-50/30'
+                    : 'bg-white/20 hover:bg-white/40'
               }`}
             >
               <span
-                className={`inline-flex items-center justify-center w-6 h-6 text-xs rounded-full ${
+                className={`inline-flex items-center justify-center w-6 h-6 text-xs rounded-full transition-colors ${
                   today
-                    ? 'bg-blue-600 text-white font-bold'
+                    ? 'bg-accent text-white font-bold'
                     : inMonth
-                      ? 'text-gray-800'
-                      : 'text-gray-300'
+                      ? 'text-slate-700'
+                      : 'text-slate-300'
                 }`}
               >
                 {date.getDate()}
@@ -73,7 +73,7 @@ export default function MonthView({ days, currentMonth, tasks, selectedDate, onS
                     />
                   ))}
                   {dayTasks.length > 5 && (
-                    <span className="text-[10px] text-gray-400 leading-none">+{dayTasks.length - 5}</span>
+                    <span className="text-[10px] text-slate-400 leading-none">+{dayTasks.length - 5}</span>
                   )}
                 </div>
               )}
