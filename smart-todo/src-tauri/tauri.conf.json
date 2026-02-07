@@ -14,8 +14,8 @@
     "windows": [
       {
         "title": "Smart Todo",
-        "width": 1371,
-        "height": 931,
+        "width": 914,
+        "height": 621,
         "resizable": true,
         "fullscreen": false
       }
