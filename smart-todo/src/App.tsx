@@ -4,6 +4,8 @@ import Providers from '@/app/providers';
 import { routes } from '@/app/routes';
 import { seedMockTasks } from '@/features/task/seed';
 import { useAuthStore } from '@/features/auth/store';
+import { listenShowMain } from '@/lib/window';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 
 function SplashScreen({ onDone }: { onDone: () => void }) {
   const [fadeOut, setFadeOut] = useState(false);
@@ -51,6 +53,16 @@ function App() {
   useEffect(() => {
     initialize();
     seedMockTasks();
+
+    // Listen for "show-main" event from mini window
+    let unlisten: (() => void) | undefined;
+    listenShowMain(async () => {
+      const win = getCurrentWindow();
+      await win.show();
+      await win.setFocus();
+    }).then((fn) => { unlisten = fn; });
+
+    return () => { unlisten?.(); };
   }, []);
 
   return (
