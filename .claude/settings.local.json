@@ -59,7 +59,16 @@
       "Bash(lsof:*)",
       "Bash(xargs kill:*)",
       "Bash(del \"D:\\\\workspace\\\\projects\\\\smart todo\\\\smart-todo\\\\backend\\\\database.sqlite\")",
-      "mcp__plugin_playwright_playwright__browser_run_code"
+      "mcp__plugin_playwright_playwright__browser_run_code",
+      "Bash(echo:*)",
+      "Bash(cmd.exe /c:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(cargo clean:*)",
+      "Bash(rustup show:*)",
+      "Bash(rustup toolchain install:*)",
+      "Bash(rustup default:*)",
+      "Bash(rustup toolchain uninstall:*)",
+      "mcp__ide__getDiagnostics"
     ]
   },
   "outputStyle": "default"

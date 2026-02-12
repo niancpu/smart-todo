@@ -3,11 +3,13 @@ import MiniTitleBar from './MiniTitleBar';
 import MiniChatView from './MiniChatView';
 import MiniCalendar from './MiniCalendar';
 import MiniTaskList from './MiniTaskList';
+import MiniBoardView from './MiniBoardView';
 
-type Tab = 'chat' | 'calendar' | 'tasks';
+type Tab = 'chat' | 'calendar' | 'tasks' | 'board';
 
 const tabs: { key: Tab; label: string }[] = [
   { key: 'chat', label: '对话' },
+  { key: 'board', label: '看板' },
   { key: 'calendar', label: '日历' },
   { key: 'tasks', label: '任务' },
 ];
@@ -42,6 +44,7 @@ export default function MiniApp() {
 
       {/* Tab content */}
       {activeTab === 'chat' && <MiniChatView />}
+      {activeTab === 'board' && <MiniBoardView />}
       {activeTab === 'calendar' && <MiniCalendar />}
       {activeTab === 'tasks' && <MiniTaskList />}
     </div>

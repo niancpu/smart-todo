@@ -14,11 +14,11 @@ const priorityColors: Record<Priority, string> = {
 const categoryLabels: Record<Category, string> = {
   work: '工作', personal: '个人', health: '健康', study: '学习', shopping: '购物', other: '其他',
 };
-const statusLabels: Record<Status, string> = {
-  todo: '待办', in_progress: '进行中', done: '已完成',
+const statusLabels: Record<string, string> = {
+  todo: '待办', doing: '进行中', done: '已完成', dropped: '已放弃',
 };
-const statusColors: Record<Status, string> = {
-  todo: 'bg-slate-400/15 text-slate-600', in_progress: 'bg-blue-400/15 text-blue-600', done: 'bg-emerald-400/15 text-emerald-600',
+const statusColors: Record<string, string> = {
+  todo: 'bg-slate-400/15 text-slate-600', doing: 'bg-blue-400/15 text-blue-600', done: 'bg-emerald-400/15 text-emerald-600', dropped: 'bg-red-400/15 text-red-500',
 };
 
 export default function TaskDetail() {
@@ -169,7 +169,7 @@ export default function TaskDetail() {
                 <div className="flex flex-wrap gap-2">
                   {task.status === 'todo' && (
                     <>
-                      <button onClick={() => handleStatusChange('in_progress')} className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-400/10 rounded-lg hover:bg-blue-400/20 transition-colors">
+                      <button onClick={() => handleStatusChange('doing')} className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-400/10 rounded-lg hover:bg-blue-400/20 transition-colors">
                         开始执行
                       </button>
                       <button onClick={() => handleStatusChange('done')} className="px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-400/10 rounded-lg hover:bg-emerald-400/20 transition-colors">
@@ -177,7 +177,7 @@ export default function TaskDetail() {
                       </button>
                     </>
                   )}
-                  {task.status === 'in_progress' && (
+                  {task.status === 'doing' && (
                     <>
                       <button onClick={() => handleStatusChange('done')} className="px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-400/10 rounded-lg hover:bg-emerald-400/20 transition-colors">
                         标记完成
@@ -185,9 +185,17 @@ export default function TaskDetail() {
                       <button onClick={() => handleStatusChange('todo')} className="px-3 py-1.5 text-xs font-medium text-slate-500 bg-white/40 rounded-lg hover:bg-white/60 transition-colors">
                         退回待办
                       </button>
+                      <button onClick={() => handleStatusChange('dropped')} className="px-3 py-1.5 text-xs font-medium text-red-500 bg-red-400/10 rounded-lg hover:bg-red-400/20 transition-colors">
+                        放弃
+                      </button>
                     </>
                   )}
                   {task.status === 'done' && (
+                    <button onClick={() => handleStatusChange('todo')} className="px-3 py-1.5 text-xs font-medium text-orange-600 bg-orange-400/10 rounded-lg hover:bg-orange-400/20 transition-colors">
+                      重新打开
+                    </button>
+                  )}
+                  {task.status === 'dropped' && (
                     <button onClick={() => handleStatusChange('todo')} className="px-3 py-1.5 text-xs font-medium text-orange-600 bg-orange-400/10 rounded-lg hover:bg-orange-400/20 transition-colors">
                       重新打开
                     </button>

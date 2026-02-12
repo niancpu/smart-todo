@@ -8,6 +8,7 @@ import Calendar from '@/pages/Calendar';
 import Analytics from '@/pages/Analytics';
 import Inbox from '@/pages/Inbox';
 import Settings from '@/pages/Settings';
+import BoardView from '@/components/board/BoardView';
 
 export const routes: RouteObject[] = [
   { path: '/login', element: <Login /> },
@@ -21,6 +22,7 @@ export const routes: RouteObject[] = [
     children: [
       { index: true, element: <ChatView /> },
       { path: 'tasks', element: <Home /> },
+      { path: 'board', element: <BoardView /> },
       { path: 'inbox', element: <Inbox /> },
       { path: 'calendar', element: <Calendar /> },
       { path: 'analytics', element: <Analytics /> },

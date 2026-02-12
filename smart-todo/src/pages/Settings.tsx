@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '@/lib/db';
 import { useAuthStore } from '@/features/auth/store';
+import { useBoardConfig, useUpdateBoardConfig, useDeleteColumn } from '@/features/board/hooks';
 import {
   getProfileApi,
   updateUsernameApi,
@@ -10,10 +11,11 @@ import {
   setPasswordApi,
   type ProfileResponse,
 } from '@/features/auth/api';
-import type { Priority, Category } from '@/types';
+import type { Priority, Category, BoardColumn } from '@/types';
 
 const STORAGE_KEY_PRIORITY = 'smart-todo-default-priority';
 const STORAGE_KEY_CATEGORY = 'smart-todo-default-category';
+const STORAGE_KEY_MINI_STATUSES = 'smart-todo-mini-board-statuses';
 
 const priorityOptions: { value: Priority; label: string }[] = [
   { value: 'urgent', label: '紧急' },
@@ -42,6 +44,14 @@ export default function Settings() {
   );
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [cleared, setCleared] = useState(false);
+
+  // Board config
+  const boardConfig = useBoardConfig();
+  const updateBoardConfig = useUpdateBoardConfig();
+  const deleteColumn = useDeleteColumn();
+  const [newColumnName, setNewColumnName] = useState('');
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const defaultColumnIds = ['todo', 'doing', 'done', 'dropped'];
 
   // Profile state
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
@@ -182,6 +192,30 @@ export default function Settings() {
   const inputClass = 'w-full px-3.5 py-2.5 rounded-xl glass-input text-sm';
   const smallBtnClass = 'px-3 py-1.5 text-sm rounded-xl glass-btn';
 
+  const handleAddColumn = async () => {
+    if (!boardConfig || !newColumnName.trim()) return;
+    const id = newColumnName.trim().toLowerCase().replace(/\s+/g, '_');
+    if (boardConfig.columns.some(c => c.id === id)) return;
+    const newCol: BoardColumn = { id, name: newColumnName.trim(), order: boardConfig.columns.length };
+    await updateBoardConfig({ ...boardConfig, columns: [...boardConfig.columns, newCol] });
+    setNewColumnName('');
+  };
+
+  const handleWipChange = async (columnId: string, value: string) => {
+    if (!boardConfig) return;
+    const wipLimit = value === '' ? undefined : Math.max(1, parseInt(value) || 1);
+    const columns = boardConfig.columns.map(c =>
+      c.id === columnId ? { ...c, wipLimit } : c
+    );
+    await updateBoardConfig({ ...boardConfig, columns });
+  };
+
+  const handleDeleteColumn = async (columnId: string) => {
+    if (!boardConfig) return;
+    await deleteColumn(boardConfig, columnId);
+    setDeleteConfirmId(null);
+  };
+
   return (
     <div className="max-w-2xl mx-auto space-y-5">
       <h1 className="text-xl font-display font-semibold text-slate-800 animate-fade-in">设置</h1>
@@ -235,6 +269,63 @@ export default function Settings() {
           </div>
         </div>
       </div>
+
+      {/* 看板设置 */}
+      {boardConfig && (
+        <div className="glass rounded-xl p-5 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+          <h2 className="text-sm font-display font-semibold text-slate-700 mb-4 flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
+              <rect x="3" y="3" width="5" height="18" rx="1" />
+              <rect x="10" y="3" width="5" height="12" rx="1" />
+              <rect x="17" y="3" width="5" height="15" rx="1" />
+            </svg>
+            看板列管理
+          </h2>
+          <div className="space-y-3">
+            {boardConfig.columns
+              .sort((a, b) => a.order - b.order)
+              .map((col) => (
+                <div key={col.id} className="flex items-center gap-3">
+                  <span className="text-sm text-slate-700 w-24 truncate">{col.name}</span>
+                  <div className="flex items-center gap-1.5">
+                    <label className="text-xs text-slate-400">WIP上限</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={col.wipLimit ?? ''}
+                      onChange={(e) => handleWipChange(col.id, e.target.value)}
+                      placeholder="无"
+                      className="w-16 px-2 py-1 text-sm rounded-lg glass-input text-center"
+                    />
+                  </div>
+                  {!defaultColumnIds.includes(col.id) && (
+                    deleteConfirmId === col.id ? (
+                      <div className="flex gap-1.5 ml-auto">
+                        <button onClick={() => handleDeleteColumn(col.id)} className="px-2 py-0.5 text-xs text-white bg-red-500 rounded-lg">确认</button>
+                        <button onClick={() => setDeleteConfirmId(null)} className="px-2 py-0.5 text-xs text-slate-500 rounded-lg hover:bg-white/40">取消</button>
+                      </div>
+                    ) : (
+                      <button onClick={() => setDeleteConfirmId(col.id)} className="ml-auto text-xs text-red-400 hover:text-red-500 transition-colors">删除</button>
+                    )
+                  )}
+                </div>
+              ))}
+            <div className="flex gap-2 pt-2 border-t border-white/15">
+              <input
+                type="text"
+                value={newColumnName}
+                onChange={(e) => setNewColumnName(e.target.value)}
+                placeholder="新列名称"
+                className="flex-1 px-3 py-1.5 text-sm rounded-xl glass-input"
+                onKeyDown={(e) => e.key === 'Enter' && handleAddColumn()}
+              />
+              <button onClick={handleAddColumn} disabled={!newColumnName.trim()} className={smallBtnClass + ' disabled:opacity-50'}>
+                添加
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 个人信息 */}
       <div className="glass rounded-xl p-5 animate-fade-in-up" style={{ animationDelay: '0.125s' }}>

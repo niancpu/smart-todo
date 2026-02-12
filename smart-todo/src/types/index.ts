@@ -1,6 +1,30 @@
 export type Priority = 'urgent' | 'high' | 'medium' | 'low';
-export type Status = 'todo' | 'in_progress' | 'done';
+export type Status = string;
 export type Category = 'work' | 'personal' | 'health' | 'study' | 'shopping' | 'other';
+
+export const DEFAULT_STATUSES = ['todo', 'doing', 'done', 'dropped'] as const;
+
+export interface BoardColumn {
+  id: string;
+  name: string;
+  order: number;
+  wipLimit?: number;
+}
+
+export interface BoardConfig {
+  id?: number;
+  userId?: string;
+  columns: BoardColumn[];
+}
+
+export const DEFAULT_BOARD_CONFIG: BoardConfig = {
+  columns: [
+    { id: 'todo', name: 'ToDo', order: 0 },
+    { id: 'doing', name: 'Doing', order: 1, wipLimit: 3 },
+    { id: 'done', name: 'Done', order: 2 },
+    { id: 'dropped', name: 'Dropped', order: 3 },
+  ],
+};
 
 export interface Task {
   id?: number;
@@ -12,6 +36,7 @@ export interface Task {
   tags: string[];
   priority: Priority;
   status: Status;
+  sortOrder?: number;
   dueDate?: Date;
   createdAt: Date;
   completedAt?: Date;
