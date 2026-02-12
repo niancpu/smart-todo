@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, saveBoardConfig, updateTask, bulkUpdateTaskStatus } from '@/lib/db';
+import { db, saveBoardConfig, updateTask, bulkUpdateTaskStatus, bulkDeleteTasksByStatus } from '@/lib/db';
 import { DEFAULT_BOARD_CONFIG } from '@/types';
 import type { Task, BoardConfig, BoardColumn } from '@/types';
 
@@ -46,12 +46,14 @@ export function useUpdateBoardConfig() {
   }, []);
 }
 
-// 删除列：该列任务全部变为 dropped
+// 删除列：dropped 列直接删任务，其他列任务归为 dropped
 export function useDeleteColumn() {
   return useCallback(async (config: BoardConfig, columnId: string) => {
-    // 把该列的任务移到 dropped
-    await bulkUpdateTaskStatus(columnId, 'dropped');
-    // 从配置中移除该列，重新排序
+    if (columnId === 'dropped') {
+      await bulkDeleteTasksByStatus('dropped');
+    } else {
+      await bulkUpdateTaskStatus(columnId, 'dropped');
+    }
     const newColumns = config.columns
       .filter(col => col.id !== columnId)
       .map((col, i) => ({ ...col, order: i }));

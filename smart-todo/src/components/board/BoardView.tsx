@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
-import { DragDropContext, type DropResult } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import { useBoardConfig, useBoardTasks, checkWipLimit } from '@/features/board/hooks';
-import { updateTask } from '@/lib/db';
+import { updateTask, saveBoardConfig } from '@/lib/db';
 import BoardColumn from './BoardColumn';
 import type { Task } from '@/types';
 
@@ -26,14 +26,25 @@ export default function BoardView() {
   }, [config, allTasks]);
 
   const onDragEnd = useCallback(async (result: DropResult) => {
-    const { source, destination, draggableId } = result;
+    const { source, destination } = result;
     if (!destination || !config) return;
 
+    // 拖拽列：重排列顺序，持久化到配置
+    if (result.type === 'COLUMN') {
+      if (source.index === destination.index) return;
+      const reordered = [...config.columns].sort((a, b) => a.order - b.order);
+      const [moved] = reordered.splice(source.index, 1);
+      reordered.splice(destination.index, 0, moved);
+      const updated = reordered.map((col, i) => ({ ...col, order: i }));
+      await saveBoardConfig({ ...config, columns: updated });
+      return;
+    }
+
+    // 拖拽卡片：移动任务
     const sameColumn = source.droppableId === destination.droppableId;
     const destColumn = config.columns.find(c => c.id === destination.droppableId);
     if (!destColumn) return;
 
-    // 跨列移动时检查 WIP 限制
     if (!sameColumn) {
       const destTasks = tasksByColumn[destination.droppableId] ?? [];
       if (checkWipLimit(destColumn, destTasks.length)) {
@@ -43,29 +54,29 @@ export default function BoardView() {
       }
     }
 
-    const taskId = Number(draggableId);
-
-    // 构建目标列的新任务顺序
+    const taskId = Number(result.draggableId);
     const destTasks = [...(tasksByColumn[destination.droppableId] ?? [])];
 
     if (sameColumn) {
-      // 列内排序：从原位置移除，插入新位置
       const [moved] = destTasks.splice(source.index, 1);
       destTasks.splice(destination.index, 0, moved);
     } else {
-      // 跨列：从源列找到任务，插入目标列
       const task = allTasks.find(t => t.id === taskId);
       if (!task) return;
       destTasks.splice(destination.index, 0, task);
     }
 
-    // 批量更新 sortOrder
-    const updates = destTasks.map((task, index) =>
-      updateTask(task.id!, {
+    const updates = destTasks.map((task, index) => {
+      const changes: Partial<Task> = {
         status: destination.droppableId,
         sortOrder: index,
-      })
-    );
+      };
+      // 跨列移动时：进入 done 记录完成时间，离开 done 清除完成时间
+      if (!sameColumn && task.id === taskId) {
+        changes.completedAt = destination.droppableId === 'done' ? new Date() : undefined;
+      }
+      return updateTask(task.id!, changes);
+    });
     await Promise.all(updates);
   }, [config, tasksByColumn, allTasks]);
 
@@ -86,20 +97,39 @@ export default function BoardView() {
       )}
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-4 flex-1 min-h-0 overflow-x-auto">
-          {sortedColumns.map(column => {
-            const tasks = tasksByColumn[column.id] ?? [];
-            const isOverWip = checkWipLimit(column, tasks.length);
-            return (
-              <BoardColumn
-                key={column.id}
-                column={column}
-                tasks={tasks}
-                isOverWip={isOverWip}
-              />
-            );
-          })}
-        </div>
+        <Droppable droppableId="board" type="COLUMN" direction="horizontal">
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className="flex gap-4 flex-1 min-h-0 overflow-x-auto"
+            >
+              {sortedColumns.map((column, index) => {
+                const tasks = tasksByColumn[column.id] ?? [];
+                const isOverWip = checkWipLimit(column, tasks.length);
+                return (
+                  <Draggable key={column.id} draggableId={column.id} index={index}>
+                    {(dragProvided) => (
+                      <div
+                        ref={dragProvided.innerRef}
+                        {...dragProvided.draggableProps}
+                        className="flex flex-col flex-1 min-w-[180px]"
+                      >
+                        <BoardColumn
+                          column={column}
+                          tasks={tasks}
+                          isOverWip={isOverWip}
+                          dragHandleProps={dragProvided.dragHandleProps}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                );
+              })}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
       </DragDropContext>
     </div>
   );

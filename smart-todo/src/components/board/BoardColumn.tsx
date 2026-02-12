@@ -1,4 +1,5 @@
 import { Droppable } from '@hello-pangea/dnd';
+import type { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
 import type { Task, BoardColumn as BoardColumnType } from '@/types';
 import BoardCard from './BoardCard';
 
@@ -6,14 +7,27 @@ interface Props {
   column: BoardColumnType;
   tasks: Task[];
   isOverWip: boolean;
+  dragHandleProps: DraggableProvidedDragHandleProps | null | undefined;
 }
 
-export default function BoardColumn({ column, tasks, isOverWip }: Props) {
+export default function BoardColumn({ column, tasks, isOverWip, dragHandleProps }: Props) {
   return (
-    <div className="flex flex-col flex-1 min-w-[180px] bg-white/60 rounded-2xl p-3">
-      {/* 列头 */}
-      <div className="flex items-center justify-between px-1 py-1 mb-2">
+    <div className="flex flex-col flex-1 bg-white/60 rounded-2xl p-3">
+      {/* 列头（拖拽手柄） */}
+      <div
+        {...dragHandleProps}
+        className="flex items-center justify-between px-1 py-1 mb-2 cursor-grab active:cursor-grabbing select-none"
+      >
         <div className="flex items-center gap-2">
+          {/* 拖拽指示图标 */}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-slate-300 flex-shrink-0">
+            <circle cx="9" cy="6" r="1.5" fill="currentColor" />
+            <circle cx="15" cy="6" r="1.5" fill="currentColor" />
+            <circle cx="9" cy="12" r="1.5" fill="currentColor" />
+            <circle cx="15" cy="12" r="1.5" fill="currentColor" />
+            <circle cx="9" cy="18" r="1.5" fill="currentColor" />
+            <circle cx="15" cy="18" r="1.5" fill="currentColor" />
+          </svg>
           <h3 className="text-sm font-semibold text-slate-700">{column.name}</h3>
           <span className="text-xs text-slate-400 bg-slate-100/60 px-1.5 py-0.5 rounded-md">
             {tasks.length}
@@ -36,7 +50,7 @@ export default function BoardColumn({ column, tasks, isOverWip }: Props) {
       )}
 
       {/* 可放置区域 */}
-      <Droppable droppableId={column.id}>
+      <Droppable droppableId={column.id} type="CARD">
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}

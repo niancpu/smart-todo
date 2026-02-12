@@ -66,3 +66,8 @@ export async function saveBoardConfig(config: BoardConfig): Promise<void> {
 export async function bulkUpdateTaskStatus(fromStatus: string, toStatus: string): Promise<void> {
   await db.tasks.where('status').equals(fromStatus).modify({ status: toStatus });
 }
+
+// 批量删除某状态的所有任务（删除 dropped 列时用）
+export async function bulkDeleteTasksByStatus(status: string): Promise<void> {
+  await db.tasks.where('status').equals(status).delete();
+}

@@ -25,7 +25,7 @@ export default function BoardCard({ task, index }: Props) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`p-3 rounded-xl transition-all duration-150 ${
+          className={`p-3 rounded-xl transition-all duration-150 select-none ${
             snapshot.isDragging
               ? 'glass-heavy shadow-glow ring-2 ring-accent/20 rotate-2'
               : 'glass hover:shadow-glass-hover'

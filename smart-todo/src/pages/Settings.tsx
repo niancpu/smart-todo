@@ -51,7 +51,10 @@ export default function Settings() {
   const deleteColumn = useDeleteColumn();
   const [newColumnName, setNewColumnName] = useState('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-  const defaultColumnIds = ['todo', 'doing', 'done', 'dropped'];
+  const defaultColumnIds = ['todo', 'doing', 'done'];
+  const [miniStatuses, setMiniStatuses] = useState<string[]>(() =>
+    JSON.parse(localStorage.getItem(STORAGE_KEY_MINI_STATUSES) || '["doing"]')
+  );
 
   // Profile state
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
@@ -85,6 +88,10 @@ export default function Settings() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY_CATEGORY, defaultCategory);
   }, [defaultCategory]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_MINI_STATUSES, JSON.stringify(miniStatuses));
+  }, [miniStatuses]);
 
   useEffect(() => {
     getProfileApi()
@@ -300,12 +307,19 @@ export default function Settings() {
                   </div>
                   {!defaultColumnIds.includes(col.id) && (
                     deleteConfirmId === col.id ? (
-                      <div className="flex gap-1.5 ml-auto">
+                      <div className="flex items-center gap-1.5 ml-auto">
+                        <span className="text-xs text-red-500">
+                          {col.id === 'dropped' ? '任务将被删除！确定？' : '任务将归为 Dropped，确定？'}
+                        </span>
                         <button onClick={() => handleDeleteColumn(col.id)} className="px-2 py-0.5 text-xs text-white bg-red-500 rounded-lg">确认</button>
                         <button onClick={() => setDeleteConfirmId(null)} className="px-2 py-0.5 text-xs text-slate-500 rounded-lg hover:bg-white/40">取消</button>
                       </div>
                     ) : (
-                      <button onClick={() => setDeleteConfirmId(col.id)} className="ml-auto text-xs text-red-400 hover:text-red-500 transition-colors">删除</button>
+                      <button onClick={() => setDeleteConfirmId(col.id)} className="ml-auto w-6 h-6 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50/50 rounded-lg transition-colors" title="删除列">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      </button>
                     )
                   )}
                 </div>
@@ -322,6 +336,37 @@ export default function Settings() {
               <button onClick={handleAddColumn} disabled={!newColumnName.trim()} className={smallBtnClass + ' disabled:opacity-50'}>
                 添加
               </button>
+            </div>
+
+            {/* 小窗看板显示列 */}
+            <div className="pt-3 border-t border-white/15">
+              <label className="text-xs text-slate-400 mb-2 block">小窗看板显示</label>
+              <div className="flex flex-wrap gap-2">
+                {boardConfig.columns
+                  .sort((a, b) => a.order - b.order)
+                  .map((col) => {
+                    const checked = miniStatuses.includes(col.id);
+                    return (
+                      <label key={col.id} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs cursor-pointer transition-colors ${
+                        checked ? 'bg-accent/10 text-accent' : 'bg-white/20 text-slate-400 hover:bg-white/30'
+                      }`}>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => {
+                            if (checked && miniStatuses.length <= 1) return;
+                            setMiniStatuses(checked
+                              ? miniStatuses.filter(s => s !== col.id)
+                              : [...miniStatuses, col.id]
+                            );
+                          }}
+                          className="sr-only"
+                        />
+                        {col.name}
+                      </label>
+                    );
+                  })}
+              </div>
             </div>
           </div>
         </div>
