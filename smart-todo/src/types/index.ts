@@ -42,6 +42,8 @@ export interface Task {
   completedAt?: Date;
   estimatedMinutes?: number;
   actualMinutes?: number;
+  doingElapsedMs?: number;
+  doingStartedAt?: Date;
   recurrence?: string;
   aiConfidence?: number;
   aiSuggestions?: string[];

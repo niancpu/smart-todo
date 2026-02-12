@@ -1,7 +1,7 @@
-import { Droppable } from '@hello-pangea/dnd';
+import { Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
 import type { Task, BoardColumn as BoardColumnType } from '@/types';
-import BoardCard from './BoardCard';
+import TaskCard from '@/components/task/TaskCard';
 
 interface Props {
   column: BoardColumnType;
@@ -19,7 +19,6 @@ export default function BoardColumn({ column, tasks, isOverWip, dragHandleProps 
         className="flex items-center justify-between px-1 py-1 mb-2 cursor-grab active:cursor-grabbing select-none"
       >
         <div className="flex items-center gap-2">
-          {/* 拖拽指示图标 */}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-slate-300 flex-shrink-0">
             <circle cx="9" cy="6" r="1.5" fill="currentColor" />
             <circle cx="15" cy="6" r="1.5" fill="currentColor" />
@@ -62,7 +61,18 @@ export default function BoardColumn({ column, tasks, isOverWip, dragHandleProps 
             }`}
           >
             {tasks.map((task, index) => (
-              <BoardCard key={task.id} task={task} index={index} />
+              <Draggable key={task.id} draggableId={String(task.id)} index={index}>
+                {(dragProv, dragSnap) => (
+                  <div
+                    ref={dragProv.innerRef}
+                    {...dragProv.draggableProps}
+                    {...dragProv.dragHandleProps}
+                    className={dragSnap.isDragging ? 'rotate-2' : ''}
+                  >
+                    <TaskCard task={task} showCheckbox={false} showDueDate={false} />
+                  </div>
+                )}
+              </Draggable>
             ))}
             {provided.placeholder}
           </div>

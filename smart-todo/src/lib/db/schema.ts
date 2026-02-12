@@ -22,5 +22,8 @@ export class SmartTodoDB extends Dexie {
         }
       });
     });
+
+    // 新增 doingElapsedMs / doingStartedAt 字段，无需新索引
+    this.version(3).stores({});
   }
 }

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import { useBoardConfig, useBoardTasks, checkWipLimit } from '@/features/board/hooks';
-import { updateTask, saveBoardConfig } from '@/lib/db';
+import { updateTask, changeTaskStatus, saveBoardConfig } from '@/lib/db';
 import BoardColumn from './BoardColumn';
 import type { Task } from '@/types';
 
@@ -66,17 +66,15 @@ export default function BoardView() {
       destTasks.splice(destination.index, 0, task);
     }
 
-    const updates = destTasks.map((task, index) => {
-      const changes: Partial<Task> = {
-        status: destination.droppableId,
-        sortOrder: index,
-      };
-      // 跨列移动时：进入 done 记录完成时间，离开 done 清除完成时间
-      if (!sameColumn && task.id === taskId) {
-        changes.completedAt = destination.droppableId === 'done' ? new Date() : undefined;
-      }
-      return updateTask(task.id!, changes);
-    });
+    const updates = destTasks.map((task, index) =>
+      updateTask(task.id!, { sortOrder: index })
+    );
+
+    // 跨列移动时：通过 changeTaskStatus 处理 doing 计时和 completedAt
+    if (!sameColumn) {
+      await changeTaskStatus(taskId, destination.droppableId);
+    }
+
     await Promise.all(updates);
   }, [config, tasksByColumn, allTasks]);
 

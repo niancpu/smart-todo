@@ -42,6 +42,38 @@ export async function updateTask(id: number, changes: Partial<Task>): Promise<vo
   await db.tasks.update(id, changes);
 }
 
+/** 切换任务状态，自动处理 doing 计时和 done 完成时间 */
+export async function changeTaskStatus(id: number, newStatus: string): Promise<void> {
+  const task = await db.tasks.get(id);
+  if (!task || task.status === newStatus) return;
+
+  const changes: Partial<Task> = { status: newStatus };
+
+  // 离开 doing → 累加已用时间，清除计时起点
+  if (task.status === 'doing' && task.doingStartedAt) {
+    const elapsed = Date.now() - new Date(task.doingStartedAt).getTime();
+    changes.doingElapsedMs = (task.doingElapsedMs ?? 0) + elapsed;
+    changes.doingStartedAt = undefined;
+  }
+
+  // 进入 doing → 记录计时起点
+  if (newStatus === 'doing') {
+    changes.doingStartedAt = new Date();
+  }
+
+  // 进入 done → 记录完成时间
+  if (newStatus === 'done') {
+    changes.completedAt = new Date();
+  }
+
+  // 离开 done → 清除完成时间
+  if (task.status === 'done') {
+    changes.completedAt = undefined;
+  }
+
+  await db.tasks.update(id, changes);
+}
+
 export async function deleteTask(id: number): Promise<void> {
   await db.tasks.delete(id);
 }

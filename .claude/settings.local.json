@@ -68,7 +68,8 @@
       "Bash(rustup toolchain install:*)",
       "Bash(rustup default:*)",
       "Bash(rustup toolchain uninstall:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(del \"D:\\\\workfield\\\\Projects\\\\ToDo\\\\smart-todo\\\\smart-todo\\\\src\\\\components\\\\board\\\\BoardCard.tsx\")"
     ]
   },
   "outputStyle": "default"
